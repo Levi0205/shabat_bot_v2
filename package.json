@@ -1,0 +1,21 @@
+{
+  "name": "shabat_bot_v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "habat_bot_v2.js",
+  "scripts": {
+    "start": "node shabat_tg_bot.js"
+  },
+  "engines": {
+    "node": "16.14.2",
+    "npm": "8.5.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.2",
+    "kosher-zmanim": "^0.8.2",
+    "node-telegram-bot-api": "^0.59.0"
+  }
+}
