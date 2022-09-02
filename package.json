@@ -4,7 +4,7 @@
   "description": "",
   "main": "habat_bot_v2.js",
   "scripts": {
-    "start": "node shabat_tg_bot.js"
+    "start": "node habat_bot_v2.js"
   },
   "engines": {
     "node": "16.14.2",
