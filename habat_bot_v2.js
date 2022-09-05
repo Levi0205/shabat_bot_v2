@@ -35,11 +35,11 @@ bot.on('location', (msg) => {
         .then( res => {
             axios.get(urlTimezone)
                 .then( tzres => {
-                    console.log(tzres.data)
+                    
 
                     const timeShift = (tzres.data.rawOffset + tzres.data.dstOffset) / 3600
 
-                    console.log( 'timeShift' ,timeShift )
+                    
 
                     let location = res.data.plus_code.compound_code
                     location = location.slice( location.indexOf(' ') + 1 )
