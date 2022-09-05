@@ -28,19 +28,25 @@ bot.onText(/start/, (msg) => {
 bot.on('location', (msg) => {
     const lg = msg.from.language_code;
     const urlPlace = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${msg.location.latitude},${msg.location.longitude}&key=${process.env.googl_aip_key}&language=${lg}`
-    const urlTimezone = `https://maps.googleapis.com/maps/api/timezone/json?location=${msg.location.latitude}%2C${msg.location.longitude}&timestamp=1331161200&key=${process.env.googl_aip_key}`
+    const urlTimezone = `https://maps.googleapis.com/maps/api/timezone/json?location=${msg.location.latitude}%2C${msg.location.longitude}&timestamp=${Math.floor((+new Date())/1000)}&key=${process.env.googl_aip_key}`
+    
 
     axios.get(urlPlace)
         .then( res => {
             axios.get(urlTimezone)
                 .then( tzres => {
-                    // console.log(tzres.data.timeZoneId)
+                    console.log(tzres.data)
+
+                    const timeShift = (tzres.data.rawOffset + tzres.data.dstOffset) / 3600
+
+                    console.log( 'timeShift' ,timeShift )
 
                     let location = res.data.plus_code.compound_code
                     location = location.slice( location.indexOf(' ') + 1 )
                     console.log("Location", location)
 
                     const currDate = new Date();
+                    const isFridayAfter12 = currDate.getDate() === 5 && currDate.getUTCHours() >= 12;
 
                     const nextFriday = new Date();
                     nextFriday.setUTCDate( nextFriday.getUTCDate() + 5 - nextFriday.getUTCDay() )
@@ -49,16 +55,15 @@ bot.on('location', (msg) => {
                     if (nextFriday - currDate < 0) {
                         nextFriday.setUTCDate( nextFriday.getUTCDate() + 7 )
                     }
-                    // текДень = 3 сен 20:00
-                    // nextFr = 3 сен 20:00
-                    // устДату( 3 + 5 - 6 ) - 2 сен 16:00
-                    // устВремя 12:00 - 2 сен 12:00
+                    
 
                     const shabathTime = getCandleTime({
                         latitude: msg.location.latitude,
                         longitude: msg.location.longitude,
                         timeZoneId: tzres.data.timeZoneId,
-                        date: nextFriday
+                        timeShift,
+                        date: isFridayAfter12 ? currDate : nextFriday,
+                        lang: lg
                     });
                     const options = { month: 'long', day: 'numeric' };
                     bot.sendMessage(
@@ -68,22 +73,34 @@ bot.on('location', (msg) => {
 
                     setTimeout( 
                         () => sendCandleTime(msg.chat.id, msg.location.latitude, msg.location.longitude),
-                        nextFriday - currDate
+                        nextFriday - currDate - (timeShift * 60 * 60 * 1000)
                     )
+                   
                 })
         })
     
 
 });
 
-function getCandleTime ( {latitude, longitude, timeZoneId, date} ){
-    const options = { date, latitude, longitude, timeZoneId };
+function getCandleTime ( {latitude, longitude, timeZoneId, timeShift, date, lang} ){
+    const options = {
+        date,
+        latitude,
+        longitude,
+    };
     const zmanim = KosherZmanim.getZmanimJson(options);
     const Dat =  new Date(zmanim.BasicZmanim.CandleLighting)
     const kostyli = zmanim.BasicZmanim.CandleLighting.split('T')[1].split(':').splice(0, 2).join(':')
+    Dat.setUTCHours( Dat.getUTCHours() + timeShift )
+    if (Dat.getSeconds() > 30)
+        Dat.setMinutes( Dat.getMinutes() + 1 )
+    const time = Dat.toLocaleTimeString(lang, {timeZone: timeZoneId})
+    const hours = +time.split(':')[0] - timeShift
+    const minutes = time.split(':')[1]
+    const usaStyle = time.match(/'am|pm'/gi)
     const ShabatTime = {
         date: Dat.toDateString(),
-        time: kostyli
+        time: hours+':'+minutes + (usaStyle || '')
     }
     
     return ShabatTime
@@ -93,4 +110,3 @@ function sendCandleTime( chatID, latitude, longitude ) {
     bot.sendMessage(chatID,`шабат дата ${shabath.date} шабат время ${shabath.time}`)
     setTimeout( () => sendCandleTime(chatID, latitude, longitude), 60480000)
 }
-    
