@@ -4,11 +4,11 @@ const bot = new TelegramBot(process.env.Telegram_Tokin, {polling: true});
 const axios = require('axios');
 const fs = require('fs');
 const path = './db.json';
-fs.appendFileSync(path, "[]");
+if ( !fs.existsSync(path) ) {
+    fs.writeFileSync(path, "[]");
+}
 let db = JSON.parse(fs.readFileSync(path, 'utf8'));
 const KosherZmanim = require("kosher-zmanim");
-
-console.log(Object.assign)
 
 const createUser = user => {
     db.push(user)
@@ -17,8 +17,7 @@ const createUser = user => {
 }
 
 const updateUser = (user, data) => {
-    //Object.assign(user, data)
-    user = {...user, ...data}
+    Object.assign(user, data)
     fs.writeFileSync(path, JSON.stringify(db))
     return user
 }
@@ -55,8 +54,17 @@ bot.onText(/start/, (msg) => {
 
 bot.on('location', (msg) => {
     const chatId = msg.chat.id;
-    const user = db.find(user => user.id === chatId);
     const lang = msg.from.language_code;
+    const user = db.find(user => user.id === chatId);
+    if (!user) {
+        user = createUser({
+            id: chatId,
+            first_name: msg.from.first_name,
+            last_name: msg.from.last_name,
+            lang,
+            updateDate: (new Date()).toUTCString()
+        })
+    }
     
     const urlPlace = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${msg.location.latitude},${msg.location.longitude}&key=${process.env.googl_aip_key}&language=${lang}`
     const urlTimezone = `https://maps.googleapis.com/maps/api/timezone/json?location=${msg.location.latitude}%2C${msg.location.longitude}&timestamp=${Math.floor((+new Date())/1000)}&key=${process.env.googl_aip_key}`
@@ -97,7 +105,7 @@ bot.on('location', (msg) => {
 
                     const shabathTime = getCandleTime(user, isFridayAfter12 ? currDate : nextFriday);
 
-                    
+            
                     const options = { month: 'long', day: 'numeric' };
                     bot.sendMessage(
                         msg.chat.id,
@@ -105,8 +113,7 @@ bot.on('location', (msg) => {
                     )
 
                     setTimeout( () => sendCandleTime(user), nextFriday - currDate - (timeShift * 60 * 60 * 1000) );
-                    
-
+                
 
                 })
         })
