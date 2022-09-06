@@ -11,13 +11,13 @@ const KosherZmanim = require("kosher-zmanim");
 
 const createUser = user => {
     db.push(user)
-    fs.writeFileSync('db.json', JSON.stringify(db))
+    fs.writeFileSync(path, JSON.stringify(db))
     return user
 }
 
 const updateUser = (user, data) => {
     Object.assign(user, data)
-    fs.writeFileSync('db.json', JSON.stringify(db))
+    fs.writeFileSync(path, JSON.stringify(db))
     return user
 }
 
