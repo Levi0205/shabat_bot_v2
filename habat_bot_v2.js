@@ -17,7 +17,8 @@ const createUser = user => {
 }
 
 const updateUser = (user, data) => {
-    Object.assign(user, data)
+    // Object.assign(user, data)
+    user = {...user, ...data}
     fs.writeFileSync(path, JSON.stringify(db))
     return user
 }
