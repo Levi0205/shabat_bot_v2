@@ -8,6 +8,7 @@ fs.appendFileSync(path, "[]");
 let db = JSON.parse(fs.readFileSync(path, 'utf8'));
 const KosherZmanim = require("kosher-zmanim");
 
+console.log(Object.assign)
 
 const createUser = user => {
     db.push(user)
