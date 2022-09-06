@@ -3,8 +3,11 @@ require('dotenv').config()
 const bot = new TelegramBot(process.env.Telegram_Tokin, {polling: true});
 const axios = require('axios');
 const fs = require('fs');
-let db = JSON.parse(fs.readFileSync('./db.json', 'utf8'));
+const path = './db.json';
+fs.appendFileSync(path, "[]");
+let db = JSON.parse(fs.readFileSync(path, 'utf8'));
 const KosherZmanim = require("kosher-zmanim");
+
 
 const createUser = user => {
     db.push(user)
