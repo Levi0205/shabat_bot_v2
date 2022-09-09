@@ -146,7 +146,7 @@ function getCandleTime ( user, date ) {
 
 function sendCandleTime( user ) {
     const shabath = getCandleTime( user, new Date() )
-    bot.sendMessage(chatID,`шабат дата ${shabath.date} шабат время ${shabath.time}`)
+    bot.sendMessage(user.id,`шабат дата ${shabath.date} шабат время ${shabath.time}`)
     setTimeout( () => sendCandleTime(user), 60480000)
 }
 
