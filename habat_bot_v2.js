@@ -27,12 +27,12 @@ const getNextFriday = (date = new Date()) => {
     nextFriday.setUTCHours( 12, 0, 0, 0 );
     return nextFriday;
 }
-const getTestFriday = (date = new Date()) => {
-    const nextFriday = new Date(date);
-    nextFriday.setUTCDate( nextFriday.getUTCDate() + 1 - nextFriday.getUTCDay() )
-    nextFriday.setUTCHours( 15, 30, 0, 0 );
-    return nextFriday;
-}
+// const getTestFriday = (date = new Date()) => {
+//     const nextFriday = new Date(date);
+//     nextFriday.setUTCDate( nextFriday.getUTCDate() + 1 - nextFriday.getUTCDay() )
+//     nextFriday.setUTCHours( 15, 30, 0, 0 );
+//     return nextFriday;
+// }
 
 const calcDate = () => {
     const currDate = new Date();
@@ -133,7 +133,7 @@ bot.on('location', (msg) => {
 
                     setTimeout( () => sendCandleTime(user), nextFriday - currDate - (timeShift * 60 * 60 * 1000) );
                     console.log(testFriday, currDate, timeShift, (testFriday - currDate) / 1000)
-                    setTimeout( () => sendCandleTime(user), testFriday - currDate - timeShift * 3600000 );
+                    //setTimeout( () => sendCandleTime(user), testFriday - currDate - timeShift * 3600000 );
 
                 })
         })
@@ -164,5 +164,5 @@ function sendCandleTime( user ) {
     const { date, time } = getCandleTime( user, new Date() )
     bot.sendMessage( user.id, `шабат дата ${date} шабат время ${time}`)
     setTimeout( () => sendCandleTime(user), 60480000)
-    setTimeout( () => sendCandleTime(user), 60000)
+    //setTimeout( () => sendCandleTime(user), 60000)
 }
