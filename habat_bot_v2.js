@@ -124,7 +124,7 @@ bot.on('location', (msg) => {
                     bot.sendMessage( user.id, `📍 ${location}\n${getMessage({ user, currDate, nextFriday, isFridayAfter12 })}` )
 
                     setTimeout( () => sendCandleTime(user), nextFriday - currDate - (timeShift * 60 * 60 * 1000) );
-                    console.log(testFriday, currDate, timeShift, (testFriday - currDate) / 1000)
+                    
                     
                 })
         })
