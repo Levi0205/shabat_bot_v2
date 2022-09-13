@@ -27,16 +27,10 @@ const getNextFriday = (date = new Date()) => {
     nextFriday.setUTCHours( 12, 0, 0, 0 );
     return nextFriday;
 }
-// const getTestFriday = (date = new Date()) => {
-//     const nextFriday = new Date(date);
-//     nextFriday.setUTCDate( nextFriday.getUTCDate() + 1 - nextFriday.getUTCDay() )
-//     nextFriday.setUTCHours( 15, 30, 0, 0 );
-//     return nextFriday;
-// }
 
-const calcDate = () => {
+const calcDate = timeShift => {
     const currDate = new Date();
-    const isFridayAfter12 = currDate.getDate() === 5 && currDate.getUTCHours() >= 12;
+    const isFridayAfter12 = currDate.getDate() === 5 && currDate.getUTCHours() + timeShift >= 12;
 
     const nextFriday = getNextFriday();
     const testFriday = getTestFriday();
@@ -56,7 +50,6 @@ const getMessage = ({ user, currDate, nextFriday, isFridayAfter12 }) => {
 
 
 bot.onText(/start/, (msg) => {
-    // console.log(msg)
     const chatId = msg.chat.id;
     const lang = msg.from.language_code;
     const locationRequestOptions = {
@@ -72,9 +65,9 @@ bot.onText(/start/, (msg) => {
     let user = db.find(user => user.id === chatId);
 
     if (user) {
-        const {currDate, nextFriday, isFridayAfter12} = calcDate()
+        const {currDate, nextFriday, isFridayAfter12} = calcDate(user.timeShift)
         const test = bot.sendMessage( user.id, `Welcome back, ${user.first_name}${user.last_name ? ' '+user.last_name : ''}!${getMessage({ user, currDate, nextFriday, isFridayAfter12 })}`, locationRequestOptions)
-    
+        
     } else {
         user = createUser({
             id: chatId,
@@ -88,7 +81,6 @@ bot.onText(/start/, (msg) => {
 });
 
 bot.on('location', (msg) => {
-    //console.log(msg)
     const chatId = msg.chat.id;
     const lang = msg.from.language_code;
     const user = db.find(user => user.id === chatId);
@@ -127,14 +119,13 @@ bot.on('location', (msg) => {
                         timeShift
                     })
 
-                    const {currDate, nextFriday, isFridayAfter12, testFriday} = calcDate()
+                    const {currDate, nextFriday, isFridayAfter12, testFriday} = calcDate(user.timeShift)
                     
                     bot.sendMessage( user.id, `📍 ${location}\n${getMessage({ user, currDate, nextFriday, isFridayAfter12 })}` )
 
                     setTimeout( () => sendCandleTime(user), nextFriday - currDate - (timeShift * 60 * 60 * 1000) );
                     console.log(testFriday, currDate, timeShift, (testFriday - currDate) / 1000)
-                    //setTimeout( () => sendCandleTime(user), testFriday - currDate - timeShift * 3600000 );
-
+                    
                 })
         })
     
@@ -164,5 +155,4 @@ function sendCandleTime( user ) {
     const { date, time } = getCandleTime( user, new Date() )
     bot.sendMessage( user.id, `шабат дата ${date} шабат время ${time}`)
     setTimeout( () => sendCandleTime(user), 60480000)
-    //setTimeout( () => sendCandleTime(user), 60000)
 }
