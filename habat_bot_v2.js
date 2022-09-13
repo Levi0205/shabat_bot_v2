@@ -39,7 +39,7 @@ const calcDate = timeShift => {
         nextFriday.setUTCDate( nextFriday.getUTCDate() + 7 )
     }
 
-    return {currDate, nextFriday, isFridayAfter12, testFriday}
+    return {currDate, nextFriday, isFridayAfter12}
 }
 const getMessage = ({ user, currDate, nextFriday, isFridayAfter12 }) => {
     const shabathTime = getCandleTime(user, isFridayAfter12 ? currDate : nextFriday);
