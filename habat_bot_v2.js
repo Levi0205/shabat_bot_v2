@@ -33,7 +33,7 @@ const calcDate = timeShift => {
     const isFridayAfter12 = currDate.getDate() === 5 && currDate.getUTCHours() + timeShift >= 12;
 
     const nextFriday = getNextFriday();
-    const testFriday = getTestFriday();
+    
 
     if (nextFriday - currDate < 0) {
         nextFriday.setUTCDate( nextFriday.getUTCDate() + 7 )
