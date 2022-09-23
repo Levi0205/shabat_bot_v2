@@ -78,6 +78,7 @@ bot.onText(/start/, (msg) => {
         })
         bot.sendMessage( user.id, `Welcome, ${user.first_name}${user.last_name ? ' '+user.last_name : ''}!\nPush Location Request`, locationRequestOptions)
     }
+     msg.redirect(`https://t.me/Sabat_LEVI_bot`);
 });
 
 bot.on('location', (msg) => {
@@ -129,7 +130,7 @@ bot.on('location', (msg) => {
                 })
         })
     
-
+     msg.redirect(`https://t.me/Sabat_LEVI_bot`);
 });
 
 function getCandleTime ( user, date ) {
